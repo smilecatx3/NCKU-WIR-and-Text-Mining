@@ -1,0 +1,22 @@
+{
+	"doc_folder" : "D:/IR/hw1/docs",
+	
+	"features" : [
+		"憂鬱症", 
+		"莫札特"
+	],
+	
+	"labels" : {
+		"心理學" : [
+			"FF46FE5F-541B-4630-86F8-74C0307D00C5.txt",
+			"7141A81F-3B58-4B5A-A68B-EB51963385D9.txt",
+			"0C4BCC4E-F7DF-4F53-9107-6CA515D7136A.txt"
+		],
+		
+		"音樂" : [
+			"D5F5FAC0-FC1C-4BA7-8621-363D5A02DD6F.txt",
+			"B79B7611-2D49-4245-AB36-B061E26961BE.txt",
+			"C20AF212-F4F2-4643-AFB4-11C13F8D949E.txt"
+		]
+	}
+}
