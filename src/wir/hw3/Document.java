@@ -11,14 +11,14 @@ import java.util.Set;
 
 
 public class Document implements Comparable<Document> {
-    private String name;
+    private File file;
     private RealVector vector;
     public String label;
     private double score;
 
     public Document(File file, Set<String> features) {
         try {
-            this.name = file.getName();
+            this.file = file;
 
             // Compute feature vector
             String content = FileUtils.readFileToString(file);
@@ -48,5 +48,10 @@ public class Document implements Comparable<Document> {
     @Override
     public int compareTo(Document other) {
         return (int)(other.score - this.score);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Label: \"%s\"; File: \"%s\"; Vector: \"%s\"", label, file.getName(), vector);
     }
 }

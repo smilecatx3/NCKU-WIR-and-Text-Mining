@@ -1,6 +1,7 @@
 out/
 libs/
 
+*~
 database.json
 
 # Intellij Idea project files

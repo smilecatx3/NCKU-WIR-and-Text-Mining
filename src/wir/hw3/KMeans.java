@@ -27,6 +27,12 @@ public class KMeans {
         this.features = features;
     }
 
+    /**
+     * Clusters the files
+     * @param files The files to be clustered
+     * @param initialClusterCenters The initial cluster centers (k is #centers)
+     * @return A Map structure with key-value pair: [Cluster_ID, Documents]
+     */
     public Map<String, List<File>> cluster(List<File> files, List<File> initialClusterCenters) {
         // Initialization
         for (File file : files)
@@ -64,7 +70,6 @@ public class KMeans {
                 result.put(clusterName, new ArrayList<>());
             result.get(clusterName).add(entry.getKey());
         }
-
         return result;
     }
 }

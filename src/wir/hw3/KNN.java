@@ -10,8 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,17 +22,17 @@ public class KNN {
 
     public static void main(String[] args) throws IOException {
         // Prepare features and training set
-        Set<String> features = new HashSet<>();
-        Map<File, String> trainingSet = new HashedMap<>();
+        Set<String> features = new LinkedHashSet<>();
+        Map<File, String> trainingSet = new LinkedHashMap<>();
         JSONObject data = new JSONObject(FileUtils.readFileToString(new File("data/hw3/features.json")));
 
         JSONArray featureArray = data.getJSONArray("features");
         for (int i=0; i<featureArray.length(); i++)
             features.add(featureArray.getString(i));
 
-        // Iterate over labels
+        // Iterate over classes
         String docFolder = data.getString("doc_folder");
-        JSONObject labels = data.getJSONObject("labels");
+        JSONObject labels = data.getJSONObject("classes");
         for (Iterator<String> iterator=labels.keys(); iterator.hasNext(); ) {
             String label = iterator.next();
             JSONArray docs = labels.getJSONArray(label);
@@ -40,11 +41,7 @@ public class KNN {
         }
 
         KNN knn = new KNN(2, features, trainingSet);
-
-//        for (String s : features)
-//            System.out.println(s);
-//        for (Map.Entry<File, String> entry : trainingSet.entrySet())
-//            System.out.println(entry.getValue() + entry.getKey());
+        System.out.println(knn);
     }
 
 
@@ -61,7 +58,7 @@ public class KNN {
     }
 
     /**
-     * Classifies the file to a class
+     * Classifies a file
      * @param file The file to be classified
      * @return The class label
      */
@@ -88,6 +85,22 @@ public class KNN {
             if (entry.getValue() > max)
                 result = entry.getKey();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("===== Features ===== \n");
+        for (String feature : features)
+            builder.append(feature).append(", ");
+        builder.delete(builder.lastIndexOf(","), builder.length()).append("\n");
+
+        builder.append("===== Traning Set ===== \n");
+        for (Document document : trainingSet)
+            builder.append(document).append("\n");
+
+        return builder.toString();
     }
 
     private double cosineSimilarity(Document doc1, Document doc2) {
