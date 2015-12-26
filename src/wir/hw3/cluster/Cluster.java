@@ -13,6 +13,9 @@ public class Cluster {
     public RealVector vector;
     public List<Document> points = new ArrayList<>();
 
+
+    public Cluster() { }
+
     public Cluster(int vectorSize) {
         vector = new ArrayRealVector(vectorSize);
     }
