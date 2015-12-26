@@ -1,4 +1,4 @@
-package wir.hw3;
+package wir.hw3.classify;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.FileUtils;
@@ -16,6 +16,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import wir.hw3.Document;
 
 
 public class KNN {

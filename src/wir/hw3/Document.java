@@ -11,9 +11,9 @@ import java.util.Set;
 
 
 public class Document implements Comparable<Document> {
+    public String label;
     private File file;
     private RealVector vector;
-    public String label;
     private double score;
 
     public Document(File file, Set<String> features) {
@@ -35,6 +35,10 @@ public class Document implements Comparable<Document> {
     public Document(File file, Set<String> features, String label) {
         this(file, features);
         this.label = label;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public RealVector getVector() {
