@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.util.Set;
 
 
-public class Document implements Comparable<Document> {
+public class Document {
     public String label;
+    public Double score; // Helps to sort by this value
     private File file;
     private RealVector vector;
-    private double score;
+
 
     public Document(File file, Set<String> features) {
         try {
@@ -43,15 +44,6 @@ public class Document implements Comparable<Document> {
 
     public RealVector getVector() {
         return vector;
-    }
-
-    public void updateScore(double score) {
-        this.score = score;
-    }
-
-    @Override
-    public int compareTo(Document other) {
-        return (int)(other.score - this.score);
     }
 
     @Override

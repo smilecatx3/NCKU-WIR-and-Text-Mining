@@ -1,14 +1,8 @@
 {
 	"doc_folder" : "D:/IR/hw1/docs",
 	
-	"features" : [
-		"潛意識", "認知", "心理", "焦慮",
-		"木馬", "病毒", "殭屍", "攻擊",
-		"hadoop", "cloud", "distributed", "雲端"
-	],
-	
 	"classes" : {
-		"心理學" : [
+		"應用心理學" : [
 			"5D4BD1D6-D3C7-4D43-B313-61AE7C5854AF.txt",
 			"59395E48-E8EA-4DF2-9F2F-ED600D97E48A.txt",
 			"73EAE351-E192-4224-8714-E43BDA3B81E6.txt",

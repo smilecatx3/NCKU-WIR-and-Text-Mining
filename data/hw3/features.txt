@@ -1,0 +1,3 @@
+潛意識, 認知, 心理, 焦慮, 
+木馬, 病毒, 殭屍, 攻擊,
+hadoop, cloud, distributed, 雲端,

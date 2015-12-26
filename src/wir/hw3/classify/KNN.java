@@ -1,6 +1,5 @@
 package wir.hw3.classify;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.linear.RealVector;
 import org.json.JSONArray;
@@ -9,41 +8,35 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import wir.hw3.Document;
+import wir.hw3.Utils;
 
 
 public class KNN {
 
     public static void main(String[] args) throws IOException {
-        // Prepare features and training set
-        Set<String> features = new LinkedHashSet<>();
-        Map<File, String> trainingSet = new LinkedHashMap<>();
-        JSONObject data = new JSONObject(FileUtils.readFileToString(new File("data/hw3/features.json")));
-
-        JSONArray featureArray = data.getJSONArray("features");
-        for (int i=0; i<featureArray.length(); i++)
-            features.add(featureArray.getString(i));
-
-        // Iterate over classes
-        String docFolder = data.getString("doc_folder");
-        JSONObject labels = data.getJSONObject("classes");
-        for (Iterator<String> iterator=labels.keys(); iterator.hasNext(); ) {
+        // Prepare training set
+        Map<File, String> trainingSet = new LinkedHashMap<>(); // [File, Label]
+        String docFolder = Utils.loadConfig("data/hw3/config.json").getString("doc_folder");
+        JSONObject data = new JSONObject(FileUtils.readFileToString(new File("data/hw3/classes.json")));
+        for (Iterator<String> iterator=data.keys(); iterator.hasNext(); ) {
             String label = iterator.next();
-            JSONArray docs = labels.getJSONArray(label);
+            JSONArray docs = data.getJSONArray(label);
             for (int i=0; i<docs.length(); i++)
                 trainingSet.put(new File(docFolder, docs.getString(i)), label);
         }
 
-        KNN knn = new KNN(2, features, trainingSet);
+        KNN knn = new KNN(5, Utils.loadFeatures("data/hw3/features.txt"), trainingSet);
         System.out.println(knn);
+        for (File file : Utils.loadTestSet("data/hw3/testset1.txt", docFolder))
+            System.out.println(String.format("%s => %s", file.getName(), knn.classify(file)));
     }
 
 
@@ -60,33 +53,36 @@ public class KNN {
     }
 
     /**
-     * Classifies a file
      * @param file The file to be classified
      * @return The class label
      */
     public String classify(File file) {
-        Document doc = new Document(file, features);
+        // A helper structure that helps determine the max occurrence of labels
+        class Label {
+            String name; Integer count=0;
+            public Label(String name) { this.name = name; }
+        }
 
         // Compute the similarity to each document in the training set
         for (Document trainingDoc : trainingSet)
-            trainingDoc.updateScore(cosineSimilarity(doc, trainingDoc));
+            trainingDoc.score = cosineSimilarity(new Document(file, features), trainingDoc);
 
         // Get the highest k similar docs
-        Collections.sort(trainingSet);
-        Map<String, Integer> labelTable = new HashedMap<>(); // <Label name, Count>
+        trainingSet.sort((doc1, doc2) -> doc2.score.compareTo(doc1.score));
+        Map<String, Label> labelTable = new HashMap<>(); // [Label name, Label]
         for (int i=0; i<k; i++) {
-            String label = trainingSet.get(i).label;
-            int count = (labelTable.get(label) == null) ? 0 : labelTable.get(label);
-            labelTable.put(label, count+1);
+            if (trainingSet.get(i).score > 0) { // Ignore the docs that its similarity is 0
+                String label = trainingSet.get(i).label;
+                if (!labelTable.containsKey(label))
+                    labelTable.put(label, new Label(label));
+                labelTable.get(label).count++;
+            }
         }
 
-        // Infer the class by the max occurrence of label name
-        String result = null;
-        int max = -1;
-        for (Map.Entry<String, Integer> entry : labelTable.entrySet())
-            if (entry.getValue() > max)
-                result = entry.getKey();
-        return result;
+        // Get the label with max occurrence
+        List<Label> labels = new ArrayList<>(labelTable.values());
+        labels.sort((label1, label2) -> label2.count.compareTo(label1.count));
+        return (labels.size() == 0) ? "N/A" : labels.get(0).name;
     }
 
     @Override
