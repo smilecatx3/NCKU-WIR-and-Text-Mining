@@ -11,13 +11,6 @@ import wir.hw3.Document;
 
 
 public class KMeans extends AbstractClusterAlgorithm {
-
-    public static void main(String[] args) {
-
-    }
-
-
-
     public KMeans(Set<String> features, List<File> files, List<File> initialClusterCenters) {
         super(features, files);
         for (int i=0; i<initialClusterCenters.size(); i++) {
@@ -32,7 +25,7 @@ public class KMeans extends AbstractClusterAlgorithm {
     public Collection<Cluster> cluster() {
         // Iterate until the clusters are stable
         boolean isStable; // isStable = whether there are any points moved to a new cluster
-        do {
+        while (true) {
             Map<String, Cluster> newClusters = new HashMap<>();
 
             // Group the points to their nearest center
@@ -40,10 +33,14 @@ public class KMeans extends AbstractClusterAlgorithm {
             for (Document doc : documentList.values()) {
                 // Compute min distance to each cluster's center
                 String oldCluster = doc.label;
-                double min = Double.MAX_VALUE;
-                for (Map.Entry<String, Cluster> entry : clusters.entrySet())
-                    if (doc.getVector().getDistance(entry.getValue().vector) < min)
+                double minDistance = Double.MAX_VALUE;
+                for (Map.Entry<String, Cluster> entry : clusters.entrySet()) {
+                    double distance = doc.getVector().getDistance(entry.getValue().vector);
+                    if (distance < minDistance) {
+                        minDistance = distance;
                         doc.label = entry.getKey();
+                    }
+                }
                 if (!doc.label.equals(oldCluster))
                     isStable = false;
 
@@ -51,16 +48,24 @@ public class KMeans extends AbstractClusterAlgorithm {
                 if (!newClusters.containsKey(doc.label))
                     newClusters.put(doc.label, new Cluster(doc.getVector().getDimension()));
                 Cluster cluster = newClusters.get(doc.label);
-                cluster.vector.add(doc.getVector());
+                cluster.vector = cluster.vector.add(doc.getVector());
                 cluster.points.add(doc);
             }
 
+            if (isStable) break;
+
             // Update cluster's centers for next iteration
-            for (Cluster cluster : newClusters.values())
-                cluster.vector.mapDivide(cluster.points.size()); // New center's vector = average(each point's vector)
+            // New center's vector = unitize(average(each point's vector))
+            for (Cluster cluster : newClusters.values()) {
+                if (cluster.points.size() > 0) {
+                    cluster.vector = cluster.vector.mapDivide(cluster.points.size());
+                    if (cluster.vector.getNorm() != 0)
+                        cluster.vector.unitize();
+                }
+            }
             clusters.clear();
             clusters.putAll(newClusters);
-        } while (!isStable);
+        }
 
         return clusters.values();
     }

@@ -10,13 +10,6 @@ import wir.hw3.Document;
 
 
 public class HierarchicalCluster extends AbstractClusterAlgorithm {
-
-    public static void main(String[] args) {
-
-    }
-
-
-
     private int numClusters; // #clusters after merging
 
     public HierarchicalCluster(Set<String> features, List<File> files, int numClusters) {

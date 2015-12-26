@@ -1,6 +1,7 @@
 package wir.hw3;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.linear.RealVector;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -48,6 +49,14 @@ public class Utils {
             e.printStackTrace();
         }
         return config;
+    }
+
+    public static String formatVector(RealVector vector) {
+        double[] entries = vector.toArray();
+        StringBuilder builder = new StringBuilder("<");
+        for (double entry : entries)
+            builder.append(String.format("%.3f, ", entry));
+        return builder.delete(builder.lastIndexOf(","), builder.length()).append(">").toString();
     }
 
 }

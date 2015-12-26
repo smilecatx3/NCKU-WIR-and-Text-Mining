@@ -28,6 +28,8 @@ public class Document {
             for (String feature : features)
                 vector[index++] = StringUtils.countMatches(content, feature);
             this.vector = new ArrayRealVector(vector);
+            if (this.vector.getNorm() != 0)
+                this.vector.unitize();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,6 +50,6 @@ public class Document {
 
     @Override
     public String toString() {
-        return String.format("Label: \"%s\"; File: \"%s\"; Vector: \"%s\"", label, file.getName(), vector);
+        return String.format("Label: \"%s\"; File: \"%s\"; Vector: \"%s\"", label, file.getName(), Utils.formatVector(vector));
     }
 }
