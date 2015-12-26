@@ -1,12 +1,12 @@
 # Web Information Retrieval and Text Mining
 
-Implementation of NCKU CSIE 'Web Information Retrieval and Text Mining' course homework using Java  
+Implementation of NCKU CSIE 'Web Information Retrieval and Text Mining' course homeworks using Java  
 - Homework 1: Small search engine
 - Homework 2: Implemetation of HITS, PageRank, and SimRank algorithms
-- Homework 3: Implementation of kNN, k-Means and hierarchical clustering algorithm
+- Homework 3: Implementation of kNN, k-Means and Hierarchical Clustering algorithms
 
 
-### Library dependencies
+### Library Dependencies
 
 - [Apache Commons Collections] (http://commons.apache.org/proper/commons-collections/)
 - [Apache Commons IO] (http://commons.apache.org/proper/commons-io/)
