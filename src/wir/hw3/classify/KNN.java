@@ -22,10 +22,12 @@ import wir.hw3.Utils;
 public class KNN {
 
     public static void main(String[] args) throws IOException {
+        JSONObject config = Utils.loadConfig(args[0]);
+
         // Prepare training set
         Map<File, String> trainingSet = new LinkedHashMap<>(); // [File, Label]
-        String docFolder = Utils.loadConfig("data/hw3/config.json").getString("doc_folder");
-        JSONObject data = new JSONObject(FileUtils.readFileToString(new File("data/hw3/classes.json")));
+        String docFolder = config.getString("doc_folder");
+        JSONObject data = new JSONObject(FileUtils.readFileToString(new File(config.getString("knn_training_set"))));
         for (Iterator<String> iterator=data.keys(); iterator.hasNext(); ) {
             String label = iterator.next();
             JSONArray docs = data.getJSONArray(label);
@@ -33,10 +35,14 @@ public class KNN {
                 trainingSet.put(new File(docFolder, docs.getString(i)), label);
         }
 
-        KNN knn = new KNN(5, Utils.loadFeatures("data/hw3/features.txt"), trainingSet);
+        Set<String> features = Utils.loadFeatures(config.getString("features"));
+        List<File> testSet = Utils.loadTestSet(config.getString("test_set"), docFolder);
+
+        long start = System.currentTimeMillis();
+        KNN knn = new KNN(config.getInt("k"), features, trainingSet);
         System.out.println(knn);
-        for (File file : Utils.loadTestSet("data/hw3/testset1.txt", docFolder))
-            System.out.println(String.format("%s => %s", file.getName(), knn.classify(file)));
+        testSet.forEach(knn::classify);
+        System.out.println(String.format("Elapsed %d ms", System.currentTimeMillis() - start));
     }
 
 
@@ -64,8 +70,9 @@ public class KNN {
         }
 
         // Compute the similarity to each document in the training set
+        Document doc = new Document(file, features);
         for (Document trainingDoc : trainingSet)
-            trainingDoc.score = cosineSimilarity(new Document(file, features), trainingDoc);
+            trainingDoc.score = cosineSimilarity(doc, trainingDoc);
 
         // Get the highest k similar docs
         trainingSet.sort((doc1, doc2) -> doc2.score.compareTo(doc1.score));
@@ -82,7 +89,9 @@ public class KNN {
         // Get the label with max occurrence
         List<Label> labels = new ArrayList<>(labelTable.values());
         labels.sort((label1, label2) -> label2.count.compareTo(label1.count));
-        return (labels.size() == 0) ? "N/A" : labels.get(0).name;
+        String label = (labels.size() == 0) ? "N/A" : labels.get(0).name;
+        System.out.println(String.format("%s => %s; vector: %s", doc.getFile().getName(), label, Utils.formatVector(doc.getVector())));
+        return label;
     }
 
     @Override

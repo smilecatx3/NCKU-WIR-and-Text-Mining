@@ -1,5 +1,7 @@
 package wir.hw3.cluster;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -15,14 +17,20 @@ import wir.hw3.Utils;
 public abstract class AbstractClusterAlgorithm {
 
     public static void main(String[] args) throws IOException {
-        String docFolder = Utils.loadConfig("data/hw3/config.json").getString("doc_folder");
-        List<File> files = Utils.loadTestSet("data/hw3/testset2.txt", docFolder);
-        List<File> initialClusterCenters = Utils.loadTestSet("data/hw3/testset2_init.txt", docFolder);
-        Set<String> features = Utils.loadFeatures("data/hw3/features.txt");
+        JSONObject config = Utils.loadConfig(args[0]);
 
-//        AbstractClusterAlgorithm method = new KMeans(features, files, initialClusterCenters);
-        AbstractClusterAlgorithm method = new HierarchicalCluster(features, files, 300);
+        String docFolder = config.getString("doc_folder");
+        Set<String> features = Utils.loadFeatures(config.getString("features"));
+        List<File> files = Utils.loadTestSet(config.getString("test_set"), docFolder);
+        List<File> initialClusterCenters = Utils.loadTestSet(config.getString("kmeans_init_center"), docFolder);
+
+        long start = System.currentTimeMillis();
+        AbstractClusterAlgorithm method = config.getString("cluster_method").equals("kmeans") ?
+                new KMeans(features, files, initialClusterCenters) :
+                new HierarchicalCluster(features, files, config.getInt("num_clusters"));
         Collection<Cluster> clusters = method.cluster();
+        System.out.println(String.format("Elapsed %d ms%n", System.currentTimeMillis() - start));
+
         int id = 0;
         for (Cluster cluster : clusters) {
             System.out.println(String.format("Cluster #%d (%d docs)", ++id, cluster.points.size()));
@@ -35,7 +43,7 @@ public abstract class AbstractClusterAlgorithm {
 
 
     protected Map<File, Document> documentList = new HashMap<>();
-    protected Map<String, Cluster> clusters = new HashMap<>(); // <Cluster_ID, Vector>
+    protected Map<String, Cluster> clusters = new HashMap<>(); // [Cluster_ID, Vector]
 
     protected AbstractClusterAlgorithm(Set<String> features, List<File> files) {
         for (File file : files)

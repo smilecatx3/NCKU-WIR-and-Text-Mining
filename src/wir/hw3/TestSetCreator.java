@@ -2,6 +2,7 @@ package wir.hw3;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,12 +17,14 @@ import java.util.Set;
 public class TestSetCreator {
 
     public static void main(String[] args) {
-        String docFolder = Utils.loadConfig("data/hw3/config.json").getString("doc_folder");
-        Set<String> features = Utils.loadFeatures("data/hw3/features.txt");
+        JSONObject config = Utils.loadConfig(args[0]);
+
+        String docFolder = config.getString("doc_folder");
+        Set<String> features = Utils.loadFeatures(config.getString("features"));
         TestSetCreator creator = new TestSetCreator(docFolder, features);
         Map<String, List<File>> testSet = creator.create();
 
-        String outputFileName = "data/hw3/testset2.txt";
+        String outputFileName = config.getString("output_name");
         System.out.print(String.format("Writing to file '%s' ... ", outputFileName));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName))){
             for (Map.Entry<String, List<File>> entry : testSet.entrySet()) {

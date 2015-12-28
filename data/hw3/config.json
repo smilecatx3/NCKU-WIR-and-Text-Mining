@@ -1,3 +1,11 @@
 {
-	"doc_folder" : "D:/IR/hw1/docs"
+	"doc_folder" : "D:/IR/hw1/docs",
+	"features" : "data/hw3/features.txt",
+	"knn_training_set" : "data/hw3/classes.json",
+    "k": 5,
+	"test_set" : "data/hw3/testset1.txt",
+	"kmeans_init_center" : "data/hw3/testset2_init.txt",
+	"cluster_method" : "kmeans",
+	"num_clusters" : 3,
+    "output_name" : "data/hw3/testset2.txt"
 }

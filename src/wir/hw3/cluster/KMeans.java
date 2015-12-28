@@ -11,6 +11,7 @@ import wir.hw3.Document;
 
 
 public class KMeans extends AbstractClusterAlgorithm {
+
     public KMeans(Set<String> features, List<File> files, List<File> initialClusterCenters) {
         super(features, files);
         for (int i=0; i<initialClusterCenters.size(); i++) {
