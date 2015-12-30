@@ -19,9 +19,9 @@ import java.util.concurrent.Future;
 
 
 public class Indexer {
-    private DocumentTable documentTable = Database.getDocumentTable();
-    private WordTable wordTable = Database.getWordTable();
-    private TermFrequencyTable tfTable = Database.getTermFrequencyTable();
+    private DocumentTable documentTable = Database.getTable("document");
+    private WordTable wordTable = Database.getTable("word");
+    private TermFrequencyTable tfTable = Database.getTable("tf");
 
     private class ParsedData {
         int numTerms;
@@ -39,7 +39,7 @@ public class Indexer {
         Future runIndex2 = Executors.newSingleThreadExecutor().submit(() -> {index(files, 1); return null;});
         runIndex1.get();
         runIndex2.get();
-        Database.updateDatabase();
+        Database.update();
         System.out.println(String.format("Index process completed (Elapsed %f seconds)", (Calendar.getInstance().getTimeInMillis()-startTime)/1000.0));
     }
 

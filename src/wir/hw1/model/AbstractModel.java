@@ -19,8 +19,8 @@ public abstract class AbstractModel {
     private PreparedStatement stmt_select_df; //TODO move to subclass
     protected Connection conn = Database.getConnection();
     protected Map<Integer, Double> idfTable = new HashMap<>();
-    protected DocumentTable documentTable = Database.getDocumentTable();
-    protected WordTable wordTable = Database.getWordTable();
+    protected DocumentTable documentTable = Database.getTable("document");
+    protected WordTable wordTable = Database.getTable("word");
 
     protected abstract List<Document> computeScore(String query, List<Integer> wordIDs) throws Exception;
 

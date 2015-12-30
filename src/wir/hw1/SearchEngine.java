@@ -17,7 +17,7 @@ public class SearchEngine {
     private VectorModel vectorModel;
 
     private SearchEngine() throws Exception {
-        Database.initialize();
+        Database.initialize("data/hw1/database.json");
         booleanModel = new BooleanModel();
         vectorModel = new VectorModel();
     }

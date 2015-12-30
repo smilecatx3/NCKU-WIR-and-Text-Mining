@@ -9,7 +9,7 @@ public class DocumentTable extends TwoColumnTable {
         super("document");
     }
 
-    public static DocumentTable getInstance() throws SQLException {
+    static DocumentTable getInstance() throws SQLException {
         if (instance == null)
             instance = new DocumentTable();
         return instance;

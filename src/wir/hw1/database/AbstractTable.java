@@ -10,7 +10,7 @@ abstract class AbstractTable {
     protected abstract boolean hasNewData();
 
     protected AbstractTable(String tableName, String sql) throws SQLException {
-        System.out.println(String.format("Initializing table `%s` ...", tableName));
+        System.out.println(String.format("- Initializing table `%s` ...", tableName));
         sql_updateDatabase = new StringBuffer(sql);
     }
 
