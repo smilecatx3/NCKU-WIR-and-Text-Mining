@@ -15,6 +15,10 @@ public class DocumentTable extends TwoColumnTable {
         return instance;
     }
 
+    /**
+     * @param name The file name to be inserted into document table
+     * @return The doc id, or -1 indicates the file already exists
+     */
     @Override
     public synchronized int insert(String name) {
         int temp = nextIndex;

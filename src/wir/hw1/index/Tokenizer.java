@@ -23,7 +23,7 @@ public class Tokenizer {
     }
 
     /**
-     * Tokenize a given sentence into a words list
+     * Splits the sentence into several tokens.
      * @param sentence The sentence to be tokenized
      * @return A list contains the tokens of the sentence
      */
@@ -49,4 +49,4 @@ public class Tokenizer {
     }
 }
 
-// Known bug: negative number will be trimed / 2015-06-08
+// TODO Known bug: negative number will be trimed / 2015-06-08

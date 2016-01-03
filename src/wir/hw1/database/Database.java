@@ -1,10 +1,5 @@
 package wir.hw1.database;
 
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,14 +15,10 @@ public class Database {
     private static Connection conn;
     private static Map<String, AbstractTable> tables = new HashMap<>();
 
-    public static void initialize(String configPath) throws IOException, SQLException {
+    public static void initialize(String url, String user, String password) throws SQLException {
         // Read config and establish connection to database
-        JSONObject config = new JSONObject(FileUtils.readFileToString(new File(configPath)));
-        System.out.println("Establishing database connection ...");
-        conn = DriverManager.getConnection(
-                config.getString("url"),
-                config.getString("user"),
-                config.getString("passwd"));
+        System.out.println(String.format("Establishing database connection to '%s' ...", url));
+        conn = DriverManager.getConnection(url, user, password);
         conn.setAutoCommit(false);
 
         // Initialize database tables

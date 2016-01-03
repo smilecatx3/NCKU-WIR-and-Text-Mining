@@ -1,19 +1,20 @@
-package wir.hw1.model;
+package wir.hw1.data;
 
-public class Document implements Comparable {
+public class Document implements Comparable<Document> {
     private String name;
     private double score;
-    private String snippet;
+    private String snippet = "(Not Available)";
 
-    Document(String name, double score, String snippet) {
+
+    public Document(String name, double score, String snippet) {
         this.name = name;
         this.score = score;
-        this.snippet = (snippet==null) ? "(Not Available)" : snippet;
+        if (snippet != null)
+            this.snippet = snippet;
     }
 
     @Override
-    public int compareTo(Object o) {
-        Document doc = (Document)o;
+    public int compareTo(Document doc) {
         return (doc.score>this.score) ? 1 : (doc.score<this.score) ? -1 : 0;
     }
 
@@ -28,4 +29,5 @@ public class Document implements Comparable {
     public String getSnippet() {
         return snippet;
     }
+
 }

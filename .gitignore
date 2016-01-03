@@ -1,5 +1,6 @@
 out/
 libs/
+**/dict/
 
 *.DS_Store
 
