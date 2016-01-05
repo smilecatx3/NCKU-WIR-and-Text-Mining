@@ -1,0 +1,21 @@
+{
+    "doc_folder" : "D:/IR/hw1/docs",
+    "model" : "boolean",
+    "index" : true,
+
+    "dict_path" : {
+        "mmseg" : "data/hw1/dict/mmseg",
+        "wordnet" : "data/hw1/dict/wordnet"
+    },
+
+    "param" : {
+        "full_match" : 0.1,
+        "partial_match" : 0.1
+    },
+
+	"database" : {
+        "url" : "jdbc:mysql://localhost:3306/wir?characterEncoding=UTF-8",
+        "user" : "wir",
+        "passwd" : "wir"
+    }
+}

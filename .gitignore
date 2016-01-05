@@ -1,8 +1,9 @@
-out/
-libs/
+**/lib/
+**/temp/
 **/dict/
 
 *.DS_Store
+*.class
 
 # Intellij Idea project files
 .idea/
