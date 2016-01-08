@@ -27,6 +27,6 @@ public class Query {
 
     /** @return true if the database contains any word of tokens or synonyms */
     public boolean isValid() {
-        return tokens.size() * synonyms.size() != 0;
+        return tokens.size() + synonyms.size() != 0;
     }
 }

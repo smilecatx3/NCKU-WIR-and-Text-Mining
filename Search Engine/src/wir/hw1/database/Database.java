@@ -15,9 +15,10 @@ public class Database {
     private static Connection conn;
     private static Map<String, AbstractTable> tables = new HashMap<>();
 
-    public static void initialize(String url, String user, String password) throws SQLException {
+    public static void initialize(String url, String user, String password) throws SQLException, ClassNotFoundException {
         // Read config and establish connection to database
         System.out.println(String.format("Establishing database connection to '%s' ...", url));
+        Class.forName("com.mysql.jdbc.Driver");
         conn = DriverManager.getConnection(url, user, password);
         conn.setAutoCommit(false);
 

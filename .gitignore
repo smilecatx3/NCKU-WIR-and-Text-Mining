@@ -4,7 +4,13 @@
 
 *.DS_Store
 *.class
+*.jpg
 
 # Intellij Idea project files
 .idea/
 *.iml
+
+# eclipse project files
+**/.settings/
+.classpath
+.project

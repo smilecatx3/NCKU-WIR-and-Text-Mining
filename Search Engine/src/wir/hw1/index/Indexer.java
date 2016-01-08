@@ -1,7 +1,6 @@
 package wir.hw1.index;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,20 +13,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import wir.hw1.SearchEngine;
 import wir.hw1.database.Database;
 import wir.hw1.database.DocumentTable;
 import wir.hw1.database.TermFrequencyTable;
 import wir.hw1.database.WordTable;
 
 public class Indexer {
-    private JSONObject config;
     private int numFiles;
     private int progress = 0;
 
-
-    public Indexer(JSONObject config) {
-        this.config = config;
-    }
 
     /**
      * Indexes the files in dirPath into database
@@ -47,7 +42,7 @@ public class Indexer {
 
         ExecutorService[] executorServices = new ExecutorService[2];
         for (int i=0; i<executorServices.length; i++)
-            executorServices[i] = Executors.newSingleThreadExecutor();
+            executorServices[i] = Executors.newCachedThreadPool();
         try {
             long startTime = System.currentTimeMillis();
             Future[] runIndex = new Future[executorServices.length];
@@ -73,7 +68,7 @@ public class Indexer {
         DocumentTable db_documentTable = Database.getTable("document");
         WordTable db_wordTable = Database.getTable("word");
         TermFrequencyTable db_tfTable = Database.getTable("tf");
-        Tokenizer tokenizer = new Tokenizer(config.getJSONObject("dict_path").getString("mmseg"));
+        Tokenizer tokenizer = new Tokenizer(new File(SearchEngine.getConfig().getString("root"), SearchEngine.getConfig().getJSONObject("dict_path").getString("mmseg")));
 
         for (File file : files) {
             System.out.println(String.format("(%d/%d) Indexing file '%s' ... ", ++progress, numFiles, file.getName()));
@@ -86,7 +81,7 @@ public class Indexer {
             }
 
             // Parse file
-            List<String> words = tokenizer.tokenize(FileUtils.readFileToString(file));
+            List<String> words = tokenizer.tokenize(FileUtils.readFileToString(file, "UTF-8"));
             Map<String, Double> wordTable = new HashMap<>(); // <Word, #Occurrence>
             for (String word : words) {
                 Double count = wordTable.get(word);
@@ -97,9 +92,11 @@ public class Indexer {
             // Insert to database
             int numWords = words.size();
             for (Map.Entry<String, Double> entry : wordTable.entrySet()) {
-                int wordID = db_wordTable.insert(entry.getKey());
                 double tf = entry.getValue() / numWords;
-                db_tfTable.insert(wordID, docID, tf);
+                if (tf >= 0.0001) {
+                    int wordID = db_wordTable.insert(entry.getKey());
+                    db_tfTable.insert(wordID, docID, tf);
+                }
             }
         }
     }

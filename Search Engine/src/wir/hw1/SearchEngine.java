@@ -4,13 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import wir.hw1.data.SearchResult;
 import wir.hw1.database.Database;
 import wir.hw1.index.Indexer;
-import wir.hw1.data.SearchResult;
 import wir.hw1.model.AbstractModel;
 import wir.hw1.model.BooleanModel;
 import wir.hw1.model.VectorModel;
@@ -19,36 +18,35 @@ import wir.hw1.util.QueryFactory;
 public class SearchEngine {
     public enum ModelType { BOOLEAN_MODEL, VECTOR_MODEL }
     private static SearchEngine instance;
-    private JSONObject config;
+    private static JSONObject config;
     private QueryFactory queryFactory;
 
 
-    public static SearchEngine getInstance(String configPath) throws IOException, SQLException {
-        if (instance == null)
-            instance = new SearchEngine(configPath);
+    public static SearchEngine getInstance(JSONObject config) throws SQLException, ClassNotFoundException {
+        if (instance == null) {
+            SearchEngine.config = config;
+            instance = new SearchEngine();
+        }
         return instance;
     }
 
-    private SearchEngine(String configPath) throws IOException, SQLException {
-        config = new JSONObject(FileUtils.readFileToString(new File(configPath)));
-
+    private SearchEngine() throws SQLException, ClassNotFoundException {
         JSONObject databaseConfig = config.getJSONObject("database");
         Database.initialize(
                 databaseConfig.getString("url"),
                 databaseConfig.getString("user"),
                 databaseConfig.getString("passwd")
         );
-
-        queryFactory = new QueryFactory(config);
+        queryFactory = new QueryFactory();
     }
 
     public AbstractModel createModel(ModelType type) throws SQLException {
         switch (type) {
             case BOOLEAN_MODEL:
             default:
-                return new BooleanModel(queryFactory, config);
+                return new BooleanModel(queryFactory);
             case VECTOR_MODEL:
-                return new VectorModel(queryFactory, config);
+                return new VectorModel(queryFactory);
         }
     }
 
@@ -57,14 +55,20 @@ public class SearchEngine {
         return new SearchResult(model.getRankingResult(query), System.currentTimeMillis() - start);
     }
 
+    public static JSONObject getConfig() {
+        return config;
+    }
+
 
 
     public static void main(String[] args) throws Exception {
-        SearchEngine searchEngine = SearchEngine.getInstance("data/hw1/config.json");
+        JSONObject config = new JSONObject(FileUtils.readFileToString(new File(args[0])));
+        config.put("root", args[1]);
+        SearchEngine searchEngine = SearchEngine.getInstance(config);
 
-        if (searchEngine.config.getBoolean("index")) {
-            Indexer indexer = new Indexer(searchEngine.config);
-            indexer.run(searchEngine.config.getString("doc_folder"));
+        if (SearchEngine.config.getBoolean("index")) {
+            Indexer indexer = new Indexer();
+            indexer.run(SearchEngine.config.getString("doc_folder"));
         } else {
             Scanner keyboard = new Scanner(System.in);
             while (true) {

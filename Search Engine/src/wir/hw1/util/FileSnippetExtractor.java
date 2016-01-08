@@ -16,7 +16,7 @@ public class FileSnippetExtractor {
 
     public FileSnippetExtractor(File file, Query query) {
         try {
-            data = FileUtils.readFileToString(file);
+            data = FileUtils.readFileToString(file, "UTF-8");
             lowerCaseData = data.toLowerCase();
             this.query = query;
         } catch (IOException e) {

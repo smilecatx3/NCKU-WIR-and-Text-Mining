@@ -30,7 +30,7 @@ public class TermFrequencyTable extends AbstractTable {
     }
 
     public synchronized void insert(int word_id, int doc_id, double tf) throws SQLException {
-        sql_updateDatabase.append(String.format("(%d, %d, %f), ", word_id, doc_id, tf));
+        sql_updateDatabase.append(String.format("(%d, %d, %.4f), ", word_id, doc_id, tf));
         if (sql_updateDatabase.length() > 50_000_000)
             updateDatabase();
     }
