@@ -93,7 +93,7 @@ public class Indexer {
             int numWords = words.size();
             for (Map.Entry<String, Double> entry : wordTable.entrySet()) {
                 double tf = entry.getValue() / numWords;
-                if (tf >= 0.0001) {
+                if (tf >= 0.001) {
                     int wordID = db_wordTable.insert(entry.getKey());
                     db_tfTable.insert(wordID, docID, tf);
                 }

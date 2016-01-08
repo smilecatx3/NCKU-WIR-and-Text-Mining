@@ -19,7 +19,6 @@ import wir.hw1.data.Query;
 import wir.hw1.database.Database;
 import wir.hw1.database.DocumentTable;
 
-/** We need this class for multi-thread use */
 public class RankingResultBuilder {
     private Connection conn = Database.getConnection();
     private DocumentTable db_documentTable = Database.getTable("document");
@@ -34,23 +33,31 @@ public class RankingResultBuilder {
         this.query = query;
     }
 
-    public List<Document> run(String partition) throws SQLException, ExecutionException, InterruptedException {
+    public List<Document> run() throws SQLException {
         List<Integer> wordIDs = new ArrayList<>(query.getTokens().values());
         int numWords = wordIDs.size();
         Map<Integer, Map<Integer, Double>> data = new HashMap<>(); // <Word_ID, <Doc_ID, TF>>
 
         // Select data from database
         ExecutorService[] executorServices = new ExecutorService[numWords];
-        List<Future<Map<Integer, Double>>> futures = new ArrayList<>();
-        for (Integer wordID : wordIDs) {
-            String sql = String.format("SELECT `doc_id`,`value` FROM `term_frequency` PARTITION(%s) WHERE `word_id`=%d;", partition, wordID);
-            for (int i=0; i<executorServices.length; i++) {
-                executorServices[i] = Executors.newCachedThreadPool();
-                futures.add(executorServices[i].submit(() -> execSQL(sql)));
+        try {
+            List<Future<Map<Integer, Double>>> futures = new ArrayList<>();
+            for (Integer wordID : wordIDs) {
+                String sql = String.format("SELECT `doc_id`,`value` FROM `term_frequency` WHERE `word_id`=%d;", wordID);
+                for (int i=0; i<executorServices.length; i++) {
+                    executorServices[i] = Executors.newCachedThreadPool();
+                    futures.add(executorServices[i].submit(() -> execSQL(sql)));
+                }
             }
+            for (int i=0; i<numWords; i++)
+                data.put(wordIDs.get(i), futures.get(i).get());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            for (ExecutorService executorService : executorServices)
+                executorService.shutdownNow();
         }
-        for (int i=0; i<numWords; i++)
-            data.put(wordIDs.get(i), futures.get(i).get());
 
         // Compute the score of each document
         Map<Integer, Double[]> docTable = new HashMap<>(); // <doc_ID, [tf*idf, #occurrence of word_id]>

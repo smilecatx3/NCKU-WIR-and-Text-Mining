@@ -36,7 +36,7 @@ public class Tokenizer {
             MMSeg mmSeg = new MMSeg(input, seg);
             Word word;
             while ((word = mmSeg.next()) != null) {
-                String string = word.getString();
+                String string = word.getString().trim();
                 if (string.length() > 50) // Ignore the word which length is too long
                     continue;
                 String lastWord = (words.size() > 0) ? words.get(words.size()-1) : "";
@@ -75,8 +75,8 @@ public class Tokenizer {
             case 1: // eg: "2016/" or "2016/01"
                 return (word.equals("/")) ? !lastWord.endsWith("/") :
                         lastWord.endsWith("/") && word.matches("0[1-9]|[1-9]|1[1-2]"); // 01~12 or 1~12 month
-            case 2: // eg: "2016/01/"
-                return word.matches("0[1-9]|[1-9]|[1-2][0-9]|3[0-1]"); // 01~31 or 1~31 day (No further check, i.e. 2/30 is valid)
+            case 2: // eg: "2016/01/" or "2016/01/25"
+                return lastWord.endsWith("/") && word.matches("0[1-9]|[1-9]|[1-2][0-9]|3[0-1]"); // 01~31 or 1~31 day (No further check, i.e. 2/30 is valid)
             default:
                 return false;
         }
